@@ -1,0 +1,56 @@
+---
+const {
+  title = "ChexLizardDecor",
+  description = "Outdoor & home decor picks with concise reviews and Amazon links.",
+  canonical,
+} = Astro.props;
+
+const siteName = "ChexLizardDecor";
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title ? `${title} | ${siteName}` : siteName}</title>
+
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index,follow" />
+
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
+      header, main, footer { max-width: 980px; margin: 0 auto; padding: 16px; }
+      header { display: flex; gap: 16px; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; }
+      nav a { margin-right: 12px; }
+      a { color: #0b57d0; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .muted { color: #666; font-size: 14px; }
+      ul { padding-left: 18px; }
+    </style>
+
+    <slot name="head" />
+  </head>
+  <body>
+    <header>
+      <a href="/"><strong>ChexLizardDecor</strong></a>
+      <nav><a href="/contact/">Contact</a>
+
+        <a href="/c/Outdoor%20Decor/">Outdoor Decor</a>
+        <a href="/c/Home%20Decor/">Home Decor</a>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <div class="muted">
+        Disclosure: As an Amazon Associate, we may earn from qualifying purchases.
+      </div>
+    </footer>
+  </body>
+</html>

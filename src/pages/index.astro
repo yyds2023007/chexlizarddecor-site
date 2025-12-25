@@ -1,0 +1,23 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const products = await getCollection("products", (p) => p.data.published);
+---
+
+<BaseLayout
+  title="Outdoor & Home Decor Picks"
+  description="Curated outdoor and home decor picks with quick summaries and links to Amazon."
+>
+  <h1>Outdoor & Home Decor Picks</h1>
+  <p class="muted">Handpicked ideas. New items added regularly.</p>
+
+  <ul>
+    {products.map((p) => (
+      <li>
+        <a href={`/p/${p.slug}/`}>{p.data.title}</a>
+        <div class="muted">{p.data.summary}</div>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

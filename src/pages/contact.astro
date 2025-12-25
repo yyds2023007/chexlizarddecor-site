@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Contact" description="Contact ChexLizardDecor">
+  <h1>Contact</h1>
+
+  <p>Email: <a href="mailto:support@chexlizarddecor.com">support@chexlizarddecor.com</a></p>
+
+  <form method="post" action="/api/contact">
+    <p>
+      <label>
+        Name<br />
+        <input name="name" required />
+      </label>
+    </p>
+
+    <p>
+      <label>
+        Email<br />
+        <input type="email" name="email" required />
+      </label>
+    </p>
+
+    <p>
+      <label>
+        Subject<br />
+        <input name="subject" required />
+      </label>
+    </p>
+
+    <p>
+      <label>
+        Message<br />
+        <textarea name="message" rows="6" required></textarea>
+      </label>
+    </p>
+
+    <button type="submit">Send</button>
+  </form>
+</BaseLayout>
