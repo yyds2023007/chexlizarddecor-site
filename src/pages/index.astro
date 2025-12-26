@@ -2,22 +2,45 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
-const products = await getCollection("products", (p) => p.data.published);
+const products = await getCollection("products", (p) => p.data.published === true);
 ---
 
 <BaseLayout
-  title="Outdoor & Home Decor Picks"
-  description="Curated outdoor and home decor picks with quick summaries and links to Amazon."
+  title="ChexLizardDecor | Outdoor & Home Decor"
+  description="Home decor and outdoor decor products. Payments are handled via Payoneer invoices. Shipping & returns: 14-day return window."
 >
-  <h1>Outdoor & Home Decor Picks</h1>
-  <p class="muted">Handpicked ideas. New items added regularly.</p>
+  <header>
+    <h1>ChexLizardDecor</h1>
+    <p class="muted">
+      Home & outdoor decor. Pay via invoice (Payoneer). 14-day returns.
+    </p>
 
-  <ul>
-    {products.map((p) => (
-      <li>
-        <a href={`/p/${p.slug}/`}>{p.data.title}</a>
-        <div class="muted">{p.data.summary}</div>
-      </li>
-    ))}
-  </ul>
+    <nav style="display:flex;gap:12px;flex-wrap:wrap;margin:14px 0 18px;">
+      <a href="/products/">Products</a>
+      <a href="/payment">Payment</a>
+      <a href="/shipping-returns">Shipping & Returns</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/contact">Contact</a>
+    </nav>
+  </header>
+
+  <section>
+    <h2>Featured products</h2>
+    <ul>
+      {products.map((p) => (
+        <li>
+          <a href={`/products/${p.slug}/`}>{p.data.title}</a>
+          <div class="muted">{p.data.summary}</div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section style="margin-top:18px;">
+    <h2>How payment works</h2>
+    <p class="muted">
+      After you click “Request invoice (Payoneer)”, you’ll be redirected to a secure Payoneer invoice page to complete payment by card or bank transfer.
+    </p>
+  </section>
 </BaseLayout>

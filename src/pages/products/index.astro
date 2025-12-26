@@ -1,0 +1,25 @@
+---
+import { getCollection } from "astro:content";
+
+const products = await getCollection("products");
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Products</title>
+  </head>
+  <body>
+    <main style="max-width:900px;margin:24px auto;padding:0 16px;font-family:system-ui;">
+      <h1>Products</h1>
+      <ul>
+        {products.map((p) => (
+          <li>
+            <a href={`/products/${p.slug}/`}>{p.data.title}</a>
+          </li>
+        ))}
+      </ul>
+    </main>
+  </body>
+</html>
