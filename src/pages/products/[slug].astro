@@ -1,0 +1,66 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import products from "../../data/products.json";
+
+export async function getStaticPaths() {
+  const live = products.filter((p) => p.published === true);
+  return live.map((p) => ({
+    params: { slug: p.asin }, // slug = ASIN
+    props: { product: p },
+  }));
+}
+
+const { product } = Astro.props;
+if (!product) return new Response("Not found", { status: 404 });
+
+const asin = product.asin;
+const imageUrl = `/images/${asin}.jpg`;
+const videoUrl = `/videos/${asin}.mp4`;
+---
+
+<BaseLayout title={`${product.title} | ChexLizardDecor`} description={product.summary}>
+  <style>
+    .wrap { max-width: 900px; }
+    .muted { color: #555; font-size: 14px; }
+    .title { margin: 0 0 8px 0; font-weight: 800; }
+    .summary { margin: 0 0 16px 0; color: #333; }
+
+    .mediaBox { width: 100%; border-radius: 12px; border: 1px solid #f2f2f2; overflow: hidden; background: #fafafa; }
+    .mediaBox > img, .mediaBox > video { width: 100%; height: 100%; display: block; object-fit: cover; }
+    .imageBox { aspect-ratio: 1 / 1; }
+    .videoBox { aspect-ratio: 16 / 9; }
+
+    .btnRow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .btn { display: inline-block; padding: 10px 14px; border-radius: 8px; border: 1px solid #0b57d0; text-decoration: none; }
+  </style>
+
+  <div class="wrap">
+    <p class="muted"><a href="/">← Back</a></p>
+
+    <h1 class="title">{product.title}</h1>
+    <p class="summary">{product.summary}</p>
+
+    <div class="mediaBox imageBox">
+      <img src={imageUrl} alt={product.title} loading="lazy" decoding="async" />
+    </div>
+
+    <div style="height: 12px;"></div>
+
+    <div class="mediaBox videoBox">
+      <video
+        src={videoUrl}
+        poster={imageUrl}
+        controls
+        muted
+        playsinline
+        preload="metadata"
+      >
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+    <div class="btnRow">
+      <a class="btn" href={product.amazonUrl} target="_blank" rel="noopener noreferrer">Buy on Amazon</a>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,44 +1,70 @@
----
+0---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
+import products from "../data/products.json";
 
-const products = await getCollection("products", (p) => p.data.published === true);
+const list = products.filter((p) => p.published === true);
 ---
 
-<BaseLayout
-  title="ChexLizardDecor | Outdoor & Home Decor"
-  description="Home & outdoor decor. Payments via Payoneer invoices. Shipping & returns: 14-day return window."
->
-  <header>
-    <h1>ChexLizardDecor</h1>
-    <p class="muted">Home & outdoor decor. Pay via invoice (Payoneer). 14-day returns.</p>
+<BaseLayout title="ChexLizardDecor" description="Browse products and buy on Amazon.">
+  <style>
+    .grid { display: grid; grid-template-columns: 1fr; gap: 18px; padding: 0; margin: 0; list-style: none; }
+    @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
 
-    <nav style="display:flex;gap:12px;flex-wrap:wrap;margin:14px 0 18px;">
-      <a href="/products/">Products</a>
-      <a href="/payment">Payment</a>
-      <a href="/shipping-returns">Shipping & Returns</a>
-      <a href="/privacy">Privacy</a>
-      <a href="/terms">Terms</a>
-      <a href="/contact">Contact</a>
-    </nav>
-  </header>
+    .card { border: 1px solid #eee; border-radius: 12px; padding: 14px; }
+    .title { margin: 0 0 6px 0; font-size: 18px; font-weight: 800; }
+    .title a { color: inherit; text-decoration: none; }
+    .title a:hover { text-decoration: underline; }
+    .summary { margin: 0 0 12px 0; color: #333; }
 
-  <section>
-    <h2>Featured products</h2>
-    <ul>
-      {products.map((p) => (
-        <li>
-          <a href={`/products/${p.slug}/`}>{p.data.title}</a>
-          <div class="muted">{p.data.summary}</div>
+    .mediaBox { width: 100%; border-radius: 12px; border: 1px solid #f2f2f2; overflow: hidden; background: #fafafa; }
+    .mediaBox > img, .mediaBox > video { width: 100%; height: 100%; display: block; object-fit: cover; }
+    .imageBox { aspect-ratio: 1 / 1; }
+    .videoBox { aspect-ratio: 16 / 9; }
+
+    .btnRow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .btn { display: inline-block; padding: 10px 14px; border-radius: 8px; border: 1px solid #0b57d0; text-decoration: none; }
+    .btnSecondary { border-color: #ddd; color: #111; }
+  </style>
+
+  <ul class="grid">
+    {list.map((p) => {
+      const asin = p.asin;
+      const imageUrl = `/images/${asin}.jpg`;
+      const videoUrl = `/videos/${asin}.mp4`;
+      const detailsUrl = `/products/${asin}`;
+
+      return (
+        <li class="card">
+          <h2 class="title"><a href={detailsUrl}>{p.title}</a></h2>
+          <div class="summary">{p.summary}</div>
+
+          <a href={detailsUrl} aria-label={`View details: ${p.title}`}>
+            <div class="mediaBox imageBox">
+              <img src={imageUrl} alt={p.title} loading="lazy" decoding="async" />
+            </div>
+          </a>
+
+          <div style="height: 12px;"></div>
+
+          <div class="mediaBox videoBox">
+            <video
+              src={videoUrl}
+              poster={imageUrl}
+              controls
+              muted
+              playsinline
+              preload="metadata"
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
+
+          <div class="btnRow">
+            <a class="btn" href={p.amazonUrl} target="_blank" rel="noopener noreferrer">Buy on Amazon</a>
+            <a class="btn btnSecondary" href={detailsUrl}>Details</a>
+          </div>
         </li>
-      ))}
-    </ul>
-  </section>
-
-  <section style="margin-top:18px;">
-    <h2>How payment works</h2>
-    <p class="muted">
-      After you click “Request invoice (Payoneer)”, you’ll be redirected to a secure Payoneer invoice page to complete payment by card or bank transfer.
-    </p>
-  </section>
+      );
+    })}
+  </ul>
 </BaseLayout>
