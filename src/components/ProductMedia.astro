@@ -1,0 +1,99 @@
+---
+const { asin } = Astro.props;
+
+const images = [1, 2, 3, 4, 5].map(
+  (n) => `/images/${asin}/${asin}-${n}.png`
+);
+
+const videoSrc = `/videos/${asin}/${asin}.mp4`;
+const videoPoster = images[0];
+---
+
+<style>
+.media { max-width: 980px; margin: 18px 0; }
+
+.main { border-radius: 14px; overflow: hidden; background: #f3f4f6; }
+.main img { width: 100%; height: auto; display: block; }
+
+.thumbs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
+.thumbs button { padding: 0; border: 2px solid transparent; border-radius: 12px; overflow: hidden; background: transparent; cursor: pointer; }
+.thumbs button.active { border-color: #111; }
+.thumbs img { width: 100%; height: 80px; object-fit: cover; display: block; background: #f3f4f6; }
+
+.videoWrap { margin-top: 16px; }
+
+.videoBtn {
+  width: 100%;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.videoBtn img { width: 140px; height: 80px; object-fit: cover; border-radius: 10px; display: block; background: #f3f4f6; }
+.videoBtn .text { text-align: left; }
+.videoBtn .title { font-weight: 600; }
+.videoBtn .sub { color: #666; font-size: 14px; }
+
+.player video { width: 100%; height: auto; border-radius: 14px; background: #000; display: block; margin-top: 10px; }
+.note { margin-top: 8px; color: #666; font-size: 14px; }
+</style>
+
+<div class="media">
+  <div class="main">
+    <img id="pm-main" src={images[0]} alt="Product image" loading="lazy" />
+  </div>
+
+  <div class="thumbs" id="pm-thumbs">
+    {images.map((src, i) => (
+      <button type="button" class={i === 0 ? "active" : ""} data-src={src} aria-label={`Image ${i + 1}`}>
+        <img src={src} alt={`Thumbnail ${i + 1}`} loading="lazy" />
+      </button>
+    ))}
+  </div>
+
+  <div class="videoWrap">
+    <button type="button" class="videoBtn" id="pm-showVideo">
+      <img src={videoPoster} alt="Video thumbnail" loading="lazy" />
+      <div class="text">
+        <div class="title">Play product video</div>
+        <div class="sub">Click to open and play</div>
+      </div>
+    </button>
+
+    <div class="player" id="pm-player" style="display:none;">
+      <video id="pm-video" controls playsinline preload="metadata" poster={videoPoster}></video>
+    </div>
+
+    <div class="note">If media does not load, verify the file exists in /public/images and /public/videos with the same ASIN.</div>
+  </div>
+
+  <script define:vars={{ images, videoSrc }}>
+    const main = document.getElementById("pm-main");
+    const thumbs = document.getElementById("pm-thumbs");
+    const buttons = Array.from(thumbs.querySelectorAll("button"));
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const src = btn.getAttribute("data-src");
+        if (src) main.src = src;
+        buttons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    const showBtn = document.getElementById("pm-showVideo");
+    const player = document.getElementById("pm-player");
+    const video = document.getElementById("pm-video");
+
+    showBtn.addEventListener("click", () => {
+      player.style.display = "block";
+      video.src = videoSrc;
+      video.play().catch(() => {});
+      showBtn.style.display = "none";
+    });
+  </script>
+</div>

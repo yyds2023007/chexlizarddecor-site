@@ -1,8 +1,8 @@
-0---
+---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import products from "../data/products.json";
 
-const list = products.filter((p) => p.published === true);
+const list = (products ?? []).filter((p) => p?.published === true);
 ---
 
 <BaseLayout title="ChexLizardDecor" description="Browse products and buy on Amazon.">
@@ -23,46 +23,45 @@ const list = products.filter((p) => p.published === true);
 
     .btnRow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
     .btn { display: inline-block; padding: 10px 14px; border-radius: 8px; border: 1px solid #0b57d0; text-decoration: none; }
+    .btnPrimary { background: #0b57d0; color: #fff; }
     .btnSecondary { border-color: #ddd; color: #111; }
+    .warn { margin-top: 10px; color: #666; font-size: 13px; }
   </style>
 
   <ul class="grid">
     {list.map((p) => {
-      const asin = p.asin;
-      const imageUrl = `/images/${asin}.jpg`;
-      const videoUrl = `/videos/${asin}.mp4`;
-      const detailsUrl = `/products/${asin}`;
+      const asin = p?.asin;
+      if (!asin) return null;
+
+      const title = p?.title ?? asin;
+      const summary = p?.summary ?? "";
+      const amazonUrl = p?.amazonUrl ?? `https://www.amazon.com/dp/${asin}`;
+      const detailsUrl = `/products/${asin}/`;
+
+      const imageUrl = `/images/${asin}/${asin}-1.png`;
+      const videoUrl = `/videos/${asin}/${asin}.mp4`;
 
       return (
         <li class="card">
-          <h2 class="title"><a href={detailsUrl}>{p.title}</a></h2>
-          <div class="summary">{p.summary}</div>
+          <h2 class="title"><a href={detailsUrl}>{title}</a></h2>
+          {summary ? <p class="summary">{summary}</p> : null}
 
-          <a href={detailsUrl} aria-label={`View details: ${p.title}`}>
-            <div class="mediaBox imageBox">
-              <img src={imageUrl} alt={p.title} loading="lazy" decoding="async" />
-            </div>
-          </a>
+          <div class="mediaBox imageBox">
+            <img src={imageUrl} alt={title} loading="lazy" decoding="async" />
+          </div>
 
           <div style="height: 12px;"></div>
 
           <div class="mediaBox videoBox">
-            <video
-              src={videoUrl}
-              poster={imageUrl}
-              controls
-              muted
-              playsinline
-              preload="metadata"
-            >
-              Your browser does not support the video tag.
-            </video>
+            <video src={videoUrl} poster={imageUrl} controls muted playsinline preload="metadata"></video>
           </div>
 
           <div class="btnRow">
-            <a class="btn" href={p.amazonUrl} target="_blank" rel="noopener noreferrer">Buy on Amazon</a>
+            <a class="btn btnPrimary" href={amazonUrl} target="_blank" rel="noopener noreferrer">Buy on Amazon</a>
             <a class="btn btnSecondary" href={detailsUrl}>Details</a>
           </div>
+
+          <div class="warn">If image/video shows blank, check files in /public/images and /public/videos.</div>
         </li>
       );
     })}
