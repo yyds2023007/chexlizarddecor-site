@@ -1,33 +1,41 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import products from "../../data/products.json";
 import ProductMedia from "../../components/ProductMedia.astro";
+import products from "../../data/products.json";
 
+// 生成静态路由：/products/<asin>/
 export async function getStaticPaths() {
-  const live = products.filter((p) => p.published === true);
-  return live.map((p) => ({
-    params: { slug: p.asin },
-    props: { product: p },
-  }));
+  const list = (products ?? []).filter((p) => p?.published === true && p?.asin);
+  return list.map((p) => ({ params: { slug: p.asin } }));
 }
 
-const { product } = Astro.props;
-if (!product) return new Response("Not found", { status: 404 });
+const { slug } = Astro.params;
 
-const asin = product.asin;
+// 通过 slug(asin) 找到对应产品数据
+const product = (products ?? []).find((p) => p?.asin === slug);
+
+const asin = product?.asin ?? slug;
+const title = product?.title ?? asin;
+const summary = product?.summary ?? "";
+const amazonUrl = product?.amazonUrl ?? `https://www.amazon.com/dp/${asin}`;
+
+// 关键：把 images / youtubeId 传给 ProductMedia
+const images = product?.images ?? [];
+const youtubeId = product?.youtubeId ?? "";
 ---
 
-<BaseLayout title={product.title} description={product.summary}>
+<BaseLayout>
   <a href="/">← Back</a>
 
-  <h1>{product.title}</h1>
-  <p>{product.summary}</p>
+  <h1>{title}</h1>
 
-  <ProductMedia asin={asin} />
+  {summary ? <p>{summary}</p> : null}
+
+  <ProductMedia asin={asin} images={images} youtubeId={youtubeId} />
 
   <p>
-    <a href={product.amazonUrl} target="_blank" rel="noopener noreferrer">Buy on Amazon</a>
+    <a href={amazonUrl} target="_blank" rel="noopener noreferrer">Buy on Amazon</a>
   </p>
 
-  <a href="/">← Back</a>
+  <p><a href="/">← Back</a></p>
 </BaseLayout>

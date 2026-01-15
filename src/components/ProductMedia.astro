@@ -1,99 +1,76 @@
 ---
-const { asin } = Astro.props;
+import YouTubeModal from "./YouTubeModal.astro";
 
-const images = [1, 2, 3, 4, 5].map(
-  (n) => `/images/${asin}/${asin}-${n}.png`
-);
+/**
+ * A 方案（products.json 存 youtubeId）：
+ * - 不渲染本地 mp4，避免 Cloudflare Pages 单文件 25MiB 限制导致部署失败
+ * - 显示图片 + “Play product video”按钮，点击后弹窗播放 YouTube
+ *
+ * 支持两种传参方式：
+ * 1) <ProductMedia asin="" images={[]} youtubeId="" />
+ * 2) <ProductMedia product={product} />
+ */
+const { asin: asinProp, images: imagesProp, youtubeId: youtubeIdProp, product } = Astro.props;
 
-const videoSrc = `/videos/${asin}/${asin}.mp4`;
-const videoPoster = images[0];
+const asin = asinProp ?? product?.asin ?? "";
+const images = imagesProp ?? product?.images ?? [];
+const youtubeId = youtubeIdProp ?? product?.youtubeId ?? "";
+
+// 将图片路径统一成 /images/{asin}/{filename}（如果已是 "/images/..." 这种绝对路径则原样返回）
+function imgSrc(p: string) {
+  if (!p) return "";
+  if (p.startsWith("/")) return p;
+  return `/images/${asin}/${p}`;
+}
 ---
 
-<style>
-.media { max-width: 980px; margin: 18px 0; }
-
-.main { border-radius: 14px; overflow: hidden; background: #f3f4f6; }
-.main img { width: 100%; height: auto; display: block; }
-
-.thumbs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
-.thumbs button { padding: 0; border: 2px solid transparent; border-radius: 12px; overflow: hidden; background: transparent; cursor: pointer; }
-.thumbs button.active { border-color: #111; }
-.thumbs img { width: 100%; height: 80px; object-fit: cover; display: block; background: #f3f4f6; }
-
-.videoWrap { margin-top: 16px; }
-
-.videoBtn {
-  width: 100%;
-  border: 1px solid #ddd;
-  background: #fff;
-  border-radius: 14px;
-  padding: 12px;
-  cursor: pointer;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-.videoBtn img { width: 140px; height: 80px; object-fit: cover; border-radius: 10px; display: block; background: #f3f4f6; }
-.videoBtn .text { text-align: left; }
-.videoBtn .title { font-weight: 600; }
-.videoBtn .sub { color: #666; font-size: 14px; }
-
-.player video { width: 100%; height: auto; border-radius: 14px; background: #000; display: block; margin-top: 10px; }
-.note { margin-top: 8px; color: #666; font-size: 14px; }
-</style>
-
-<div class="media">
-  <div class="main">
-    <img id="pm-main" src={images[0]} alt="Product image" loading="lazy" />
-  </div>
-
-  <div class="thumbs" id="pm-thumbs">
-    {images.map((src, i) => (
-      <button type="button" class={i === 0 ? "active" : ""} data-src={src} aria-label={`Image ${i + 1}`}>
-        <img src={src} alt={`Thumbnail ${i + 1}`} loading="lazy" />
-      </button>
-    ))}
-  </div>
-
-  <div class="videoWrap">
-    <button type="button" class="videoBtn" id="pm-showVideo">
-      <img src={videoPoster} alt="Video thumbnail" loading="lazy" />
-      <div class="text">
-        <div class="title">Play product video</div>
-        <div class="sub">Click to open and play</div>
-      </div>
-    </button>
-
-    <div class="player" id="pm-player" style="display:none;">
-      <video id="pm-video" controls playsinline preload="metadata" poster={videoPoster}></video>
+<div class="product-media">
+  {images?.length > 0 ? (
+    <div class="product-images">
+      {images.map((img, idx) => (
+        <figure class="product-image" key={`${asin}-${idx}`}>
+          <img src={imgSrc(img)} alt={`${asin} image ${idx + 1}`} loading="lazy" />
+        </figure>
+      ))}
     </div>
+  ) : (
+    <p>No images</p>
+  )}
 
-    <div class="note">If media does not load, verify the file exists in /public/images and /public/videos with the same ASIN.</div>
-  </div>
-
-  <script define:vars={{ images, videoSrc }}>
-    const main = document.getElementById("pm-main");
-    const thumbs = document.getElementById("pm-thumbs");
-    const buttons = Array.from(thumbs.querySelectorAll("button"));
-
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const src = btn.getAttribute("data-src");
-        if (src) main.src = src;
-        buttons.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-      });
-    });
-
-    const showBtn = document.getElementById("pm-showVideo");
-    const player = document.getElementById("pm-player");
-    const video = document.getElementById("pm-video");
-
-    showBtn.addEventListener("click", () => {
-      player.style.display = "block";
-      video.src = videoSrc;
-      video.play().catch(() => {});
-      showBtn.style.display = "none";
-    });
-  </script>
+  {youtubeId ? (
+    <div class="product-video">
+      <YouTubeModal youtubeId={youtubeId} />
+    </div>
+  ) : null}
 </div>
+
+<style>
+  .product-images {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 12px;
+    margin: 12px 0;
+  }
+
+  .product-image {
+    margin: 0;
+  }
+
+  .product-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .product-video {
+    margin-top: 12px;
+  }
+
+  @media (min-width: 900px) {
+    .product-images {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

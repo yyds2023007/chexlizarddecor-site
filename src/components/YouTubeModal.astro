@@ -1,0 +1,112 @@
+---
+const {
+  youtubeId,
+  buttonText = "Play product video",
+  subText = "Click to open and play",
+} = Astro.props;
+
+const dialogId = `yt-${youtubeId}`;
+const embedUrl = `https://www.youtube.com/embed/${youtubeId}?rel=0&autoplay=1`;
+---
+
+{youtubeId && (
+  <>
+    <button type="button" class="ytCard" data-open={dialogId}>
+      <div class="title">{buttonText}</div>
+      <div class="sub">{subText}</div>
+    </button>
+
+    <dialog id={dialogId} class="ytDialog">
+      <button type="button" class="close" data-close aria-label="Close">×</button>
+
+      <div class="frame">
+        <iframe
+          data-src={embedUrl}
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </dialog>
+
+    <script define:vars={{ dialogId }}>
+      const dialog = document.getElementById(dialogId);
+      const openBtn = document.querySelector(`[data-open="${dialogId}"]`);
+      const closeBtn = dialog.querySelector("[data-close]");
+      const iframe = dialog.querySelector("iframe");
+
+      const load = () => iframe.setAttribute("src", iframe.dataset.src);
+      const unload = () => iframe.removeAttribute("src");
+
+      openBtn?.addEventListener("click", () => {
+        load();
+        dialog.showModal();
+      });
+
+      closeBtn?.addEventListener("click", () => {
+        dialog.close();
+        unload();
+      });
+
+      dialog.addEventListener("click", (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+
+      dialog.addEventListener("close", unload);
+    </script>
+
+    <style>
+      .ytCard {
+        width: 100%;
+        text-align: left;
+        padding: 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        background: #fff;
+        cursor: pointer;
+      }
+      .title { font-weight: 600; }
+      .sub { color: #6b7280; }
+
+      .ytDialog {
+        padding: 0;
+        border: 0;
+        border-radius: 12px;
+        overflow: hidden;
+        max-width: min(700px, 94vw);
+        background: #000;
+      }
+      .ytDialog::backdrop {
+        background: rgba(0, 0, 0, 0.6);
+      }
+
+      .close {
+        position: absolute;
+        right: 10px;
+        top: 6px;
+        font-size: 22px;
+        background: rgba(0, 0, 0, 0.45);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 6px;
+        cursor: pointer;
+        line-height: 1;
+        padding: 6px 10px;
+        z-index: 2;
+      }
+
+      /* B：主体完整 —— 让播放器用 16:9（不会缩成底部小窗） */
+      .frame {
+        width: min(700px, 94vw);
+        aspect-ratio: 16 / 9;
+        background: #000;
+      }
+      .frame iframe {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
+  </>
+)}
