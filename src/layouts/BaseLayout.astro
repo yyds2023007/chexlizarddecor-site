@@ -1,4 +1,6 @@
 ---
+import AmazonDisclosure from "../components/AmazonDisclosure.astro";
+
 const {
   title = "ChexLizardDecor",
   description = "Outdoor & home decor picks with concise reviews and Amazon links.",
@@ -19,35 +21,27 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
 
-    <style>
-      :root { color-scheme: light; }
-      body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height: 1.5; }
-      .container { max-width: 980px; margin: 0 auto; padding: 16px; }
-      header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid #eee; }
-      a { color: #0b57d0; text-decoration: none; }
-      a:hover { text-decoration: underline; }
-      nav { display: flex; gap: 16px; flex-wrap: wrap; }
-      main { padding: 18px 0; }
-      footer { padding: 18px 0; border-top: 1px solid #eee; font-size: 14px; color: #444; }
-    </style>
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
   </head>
 
   <body>
-    <div class="container">
-      <header>
-        <a href="/"><strong>{siteName}</strong></a>
-        <nav>
-          <a href="/contact">Contact</a>
-        </nav>
-      </header>
+    <main>
+      <slot />
+    </main>
 
-      <main>
-        <slot />
-      </main>
-
-      <footer>
-        <div>{siteName}</div>
-      </footer>
-    </div>
+    <footer class="site-footer">
+      <AmazonDisclosure />
+    </footer>
   </body>
 </html>
+
+<style>
+  .site-footer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px;
+  }
+</style>
