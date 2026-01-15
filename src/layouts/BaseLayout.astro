@@ -25,23 +25,46 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
+
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        line-height: 1.5;
+      }
+      .container { max-width: 1200px; margin: 0 auto; padding: 16px; }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+      }
+      nav { display: flex; gap: 16px; }
+      a { color: #0b57d0; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      main { padding: 18px 0; }
+      footer { padding: 18px 0; border-top: 1px solid #eee; }
+    </style>
   </head>
 
   <body>
-    <main>
-      <slot />
-    </main>
+    <div class="container">
+      <header>
+        <a href="/"><strong>{siteName}</strong></a>
+        <nav>
+          <a href="/contact">Contact</a>
+        </nav>
+      </header>
 
-    <footer class="site-footer">
-      <AmazonDisclosure />
-    </footer>
+      <main>
+        <slot />
+      </main>
+
+      <footer>
+        <AmazonDisclosure />
+      </footer>
+    </div>
   </body>
 </html>
-
-<style>
-  .site-footer {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px 16px;
-  }
-</style>
