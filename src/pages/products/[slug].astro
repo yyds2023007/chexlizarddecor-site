@@ -29,13 +29,71 @@ const youtubeId = product?.youtubeId ?? "";
 
   <h1>{title}</h1>
 
+  <!-- 首屏披露：Amazon Operating Agreement 要求清晰显眼展示 -->
+  <div class="amazon-disclosure" role="note" aria-label="Amazon affiliate disclosure">
+    As an Amazon Associate I earn from qualifying purchases.
+  </div>
+
   {summary ? <p>{summary}</p> : null}
+
+  <!-- 卖点：通用且不需要你每个产品手改 -->
+  <ul class="bullets" aria-label="Product highlights">
+    <li>Solar-powered outdoor decor light—no wiring needed.</li>
+    <li>Waterproof design for patio, porch, yard, and balcony use.</li>
+    <li>Cordless and easy to move for seasonal decorating.</li>
+    <li>A fun accent piece that adds a warm glow at night.</li>
+    <li>Great gift idea for garden and outdoor decor lovers.</li>
+  </ul>
+
+  <!-- 主按钮放在图片前，提高点击率 -->
+  <p class="cta">
+    <a class="btn primary" href={amazonUrl} target="_blank" rel="noopener noreferrer">
+      Buy on Amazon
+    </a>
+    <span class="small-disclosure">(paid link)</span>
+  </p>
 
   <ProductMedia asin={asin} images={images} youtubeId={youtubeId} />
 
-  <p>
-    <a href={amazonUrl} target="_blank" rel="noopener noreferrer">Buy on Amazon</a>
+  <!-- 页面底部再放一次按钮 -->
+  <p class="cta">
+    <a class="btn primary" href={amazonUrl} target="_blank" rel="noopener noreferrer">
+      Buy on Amazon
+    </a>
+    <span class="small-disclosure">(paid link)</span>
   </p>
 
   <p><a href="/">← Back</a></p>
+
+  <style>
+    .bullets {
+      margin: 12px 0 14px;
+      padding-left: 18px;
+    }
+    .bullets li {
+      margin: 6px 0;
+    }
+    .cta {
+      margin: 12px 0 14px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      text-decoration: none;
+    }
+    .btn.primary {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #fff;
+    }
+    .small-disclosure {
+      display: inline-block;
+      margin-left: 10px;
+      font-size: 12px;
+      line-height: 1.4;
+      opacity: 0.85;
+    }
+  </style>
 </BaseLayout>
