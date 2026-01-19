@@ -18,6 +18,11 @@ function toImageUrl(asin, img) {
   <main class="container">
     <h1 class="site-title">ChexLizardDecor</h1>
 
+    <!-- 站点级披露：放在首屏更显眼 -->
+    <div class="site-disclosure" role="note" aria-label="Amazon affiliate disclosure">
+      As an Amazon Associate I earn from qualifying purchases.
+    </div>
+
     <div class="grid">
       {list.map((p) => {
         const asin = p?.asin;
@@ -42,10 +47,15 @@ function toImageUrl(asin, img) {
             {summary ? <p class="summary">{summary}</p> : null}
 
             <div class="actions">
-              <a class="btn primary" href={amazonUrl} target="_blank" rel="noopener noreferrer">
+              <a class="btn primary" href={detailsUrl}>See details</a>
+
+              <a class="btn" href={amazonUrl} target="_blank" rel="noopener noreferrer">
                 Buy on Amazon
               </a>
-              <a class="btn" href={detailsUrl}>Details</a>
+
+              <span class="link-disclosure" role="note" aria-label="Amazon affiliate disclosure">
+                (paid link)
+              </span>
             </div>
           </article>
         );
@@ -55,16 +65,33 @@ function toImageUrl(asin, img) {
 
   <style>
     .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
-    .site-title { margin: 0 0 18px; }
+    .site-title { margin: 0 0 10px; }
+
+    .site-disclosure {
+      font-size: 12px;
+      line-height: 1.4;
+      opacity: 0.9;
+      margin: 0 0 16px;
+    }
+
     .grid { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 18px; }
     .card { border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 14px; background: #fff; }
     .image-link { display: block; }
     .cover { width: 100%; height: auto; display: block; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); }
     .title { margin: 12px 0 6px; font-size: 20px; }
     .summary { margin: 0 0 12px; color: rgba(0,0,0,0.72); }
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
     .btn { display: inline-block; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.18); text-decoration: none; }
     .btn.primary { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
+
+    .link-disclosure {
+      font-size: 12px;
+      line-height: 1.4;
+      opacity: 0.85;
+    }
+
     @media (min-width: 900px) {
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
